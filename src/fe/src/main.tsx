@@ -9,6 +9,7 @@ import '@/styles/globals.css'
 
 async function enableMocking() {
   if (!import.meta.env.DEV) return
+  if (import.meta.env.VITE_USE_MOCK === 'false') return
   const { worker } = await import('./mocks/browser')
   return worker.start({ onUnhandledRequest: 'bypass' })
 }

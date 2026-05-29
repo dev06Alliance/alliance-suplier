@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="AllianceSupplier.Api/AllianceSupplier.Api.csproj" />
+  <Project Path="AllianceSupplier.Domain/AllianceSupplier.Domain.csproj" />
+  <Project Path="AllianceSupplier.Infrastructure/AllianceSupplier.Infrastructure.csproj" />
+  <Project Path="AllianceSupplier.Service/AllianceSupplier.Service.csproj" />
+</Solution>

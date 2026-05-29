@@ -19,7 +19,7 @@ interface LoginResponse {
 export function LoginPage() {
   const navigate = useNavigate()
   const { setAuth } = useAuthStore()
-  const [email, setEmail] = useState('')
+  const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
 
@@ -27,12 +27,12 @@ export function LoginPage() {
     e.preventDefault()
     setLoading(true)
     try {
-      const res = await api.post('/auth/login', { email, password }) as unknown as LoginResponse
+      const res = await api.post('/auth/login', { username, password }) as unknown as LoginResponse
       setToken(res.data.accessToken)
       setAuth(res.data.user, res.data.user.role, res.data.accessToken)
       void navigate('/tickets')
     } catch {
-      toast.error('Email hoặc mật khẩu không đúng.')
+      toast.error('Tên đăng nhập hoặc mật khẩu không đúng.')
     } finally {
       setLoading(false)
     }
@@ -54,13 +54,13 @@ export function LoginPage() {
 
         <form onSubmit={(e) => void handleSubmit(e)} className="space-y-4">
           <div className="space-y-1.5">
-            <Label htmlFor="email">Email</Label>
+            <Label htmlFor="username">Tên đăng nhập</Label>
             <Input
-              id="email"
-              type="email"
-              placeholder="email@company.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              id="username"
+              type="text"
+              placeholder="Nhập tên đăng nhập"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
               required
               autoFocus
             />
@@ -94,7 +94,7 @@ export function LoginPage() {
               <button
                 key={e}
                 type="button"
-                onClick={() => setEmail(e)}
+                onClick={() => setUsername(e)}
                 className="w-full text-left px-3 py-2 rounded-sm hover:bg-canvas-soft-2 transition-colors flex items-center justify-between group"
               >
                 <span className="text-xs font-mono text-body group-hover:text-ink">{e}</span>

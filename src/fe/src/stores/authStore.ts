@@ -1,5 +1,6 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
+import { useEffect, useState } from 'react'
 
 type Role = 'User' | 'Manager' | 'Admin'
 
@@ -29,3 +30,15 @@ export const useAuthStore = create<AuthState>()(
     { name: 'alliance_auth' }
   )
 )
+
+export function useAuthHydrated() {
+  const [hydrated, setHydrated] = useState(() => useAuthStore.persist.hasHydrated())
+  useEffect(() => {
+    if (useAuthStore.persist.hasHydrated()) {
+      setHydrated(true)
+      return
+    }
+    return useAuthStore.persist.onFinishHydration(() => setHydrated(true))
+  }, [])
+  return hydrated
+}

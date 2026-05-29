@@ -2,6 +2,17 @@ import { http, passthrough } from 'msw'
 import { BASE, ok, err, requireAuth } from '../helpers'
 import { db } from '../db'
 
+const TYPE_LABELS: Record<string, string> = {
+  TicketCreated: 'Ticket mới đã được tạo',
+  TicketConfirmed: 'Ticket đã được xác nhận',
+  TicketDone: 'Ticket đã hoàn thành',
+}
+
+function buildMessage(type: string, ticketId?: string): string {
+  const label = TYPE_LABELS[type] ?? 'Thông báo mới'
+  return ticketId ? `${label} #${ticketId.slice(0, 8)}` : label
+}
+
 export const notificationHandlers = [
   http.get(`${BASE}/notifications/stream`, () => passthrough()),
 
@@ -18,7 +29,14 @@ export const notificationHandlers = [
 
     if (unreadOnly) list = list.filter((n) => !n.isRead)
 
-    return ok(list)
+    const mapped = list.map((n) => {
+      const payload = n.payload as Record<string, unknown> | undefined
+      const ticketId = (payload?.ticketId ?? payload?.id ?? n.ticketId) as string | undefined
+      const message = n.message as string | undefined ?? buildMessage(n.type as string, ticketId)
+      return { ...n, read: !n.isRead, ticketId, message }
+    })
+
+    return ok(mapped)
   }),
 
   http.patch(`${BASE}/notifications/:id/read`, ({ request, params }) => {
@@ -31,7 +49,7 @@ export const notificationHandlers = [
     if (!notif) return err('NOT_FOUND', 'Notification not found.', 404)
 
     notif.isRead = true
-    return ok(notif)
+    return ok({ ...notif, read: true })
   }),
 
   http.patch(`${BASE}/notifications/read-all`, ({ request }) => {

@@ -4,11 +4,13 @@ import { formatDistanceToNow } from 'date-fns'
 import { Button } from '@/components/ui/button'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { useNotifStore } from '@/stores/notifStore'
+import { useNotifications } from '@/hooks/useNotifications'
 import { cn } from '@/lib/utils'
 
 export function NotifBell() {
   const navigate = useNavigate()
-  const { unreadCount, notifications, markAllRead, markRead } = useNotifStore()
+  const { unreadCount, notifications } = useNotifStore()
+  const { markRead, markAllRead } = useNotifications()
 
   return (
     <Popover>
@@ -25,7 +27,7 @@ export function NotifBell() {
       <PopoverContent className="w-80 p-0 shadow-level-5" align="end">
         <header className="flex items-center justify-between p-4 border-b border-hairline">
           <span className="font-medium text-sm text-ink">Thông báo</span>
-          <Button variant="ghost" size="sm" onClick={markAllRead} className="text-xs text-mute hover:text-ink">
+          <Button variant="ghost" size="sm" onClick={() => void markAllRead()} className="text-xs text-mute hover:text-ink">
             Đánh dấu tất cả đã đọc
           </Button>
         </header>
@@ -37,7 +39,7 @@ export function NotifBell() {
               <li
                 key={n.id}
                 onClick={() => {
-                  markRead(n.id)
+                  void markRead(n.id)
                   if (n.ticketId) void navigate('/tickets/' + n.ticketId)
                 }}
                 className={cn(
@@ -47,7 +49,7 @@ export function NotifBell() {
               >
                 <p className="text-sm text-ink flex-1">{n.message ?? `Ticket #${n.ticketId?.slice(0, 8)}`}</p>
                 <time className="text-xs text-mute shrink-0">
-                  {formatDistanceToNow(new Date(n.createdAt), { addSuffix: true })}
+                  {(() => { const d = new Date(n.createdAt); return isNaN(d.getTime()) ? '' : formatDistanceToNow(d, { addSuffix: true }) })()}
                 </time>
               </li>
             ))

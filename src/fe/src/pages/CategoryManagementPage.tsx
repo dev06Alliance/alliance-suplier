@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { Plus, Pencil, Trash2, ChevronRight } from 'lucide-react'
 import { toast } from 'sonner'
@@ -53,13 +53,12 @@ interface NameDialogProps {
 function NameDialog({ open, onOpenChange, title, initialValue = '', onConfirm, isPending }: NameDialogProps) {
   const [name, setName] = useState(initialValue)
 
-  const handleOpen = (v: boolean) => {
-    if (v) setName(initialValue)
-    onOpenChange(v)
-  }
+  useEffect(() => {
+    if (open) setName(initialValue)
+  }, [open, initialValue])
 
   return (
-    <Dialog open={open} onOpenChange={handleOpen}>
+    <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
         <DialogHeader><DialogTitle>{title}</DialogTitle></DialogHeader>
         <div className="space-y-1.5">
@@ -124,12 +123,21 @@ export function CategoryManagementPage() {
 
   // Product mutations
   const addProd = useMutation({
-    mutationFn: (name: string) => api.post('/products', { name, categoryId: selectedCatId }),
+    mutationFn: (name: string) => {
+      const fd = new FormData()
+      fd.append('name', name)
+      fd.append('categoryId', selectedCatId!)
+      return api.post('/products', fd)
+    },
     onSuccess: () => { void qc.invalidateQueries({ queryKey: ['products', selectedCatId] }); setProdDialog({ open: false, mode: 'add' }); toast.success('Đã thêm sản phẩm') },
     onError: () => toast.error('Không thể thêm sản phẩm'),
   })
   const editProd = useMutation({
-    mutationFn: ({ id, name }: { id: string; name: string }) => api.put('/products/' + id, { name }),
+    mutationFn: ({ id, name }: { id: string; name: string }) => {
+      const fd = new FormData()
+      fd.append('name', name)
+      return api.put('/products/' + id, fd)
+    },
     onSuccess: () => { void qc.invalidateQueries({ queryKey: ['products', selectedCatId] }); setProdDialog({ open: false, mode: 'add' }); toast.success('Đã cập nhật sản phẩm') },
     onError: () => toast.error('Không thể cập nhật'),
   })

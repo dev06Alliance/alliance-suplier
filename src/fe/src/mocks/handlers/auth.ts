@@ -4,8 +4,8 @@ import { db } from '../db'
 
 export const authHandlers = [
   http.post(`${BASE}/auth/login`, async ({ request }) => {
-    const { email, password } = await request.json() as { email: string; password: string }
-    const user = db.users.find((u) => u.email === email && u.password === password)
+    const { username, password } = await request.json() as { username: string; password: string }
+    const user = db.users.find((u) => u.email === username && u.password === password)
     if (!user) return err('INVALID_CREDENTIALS', 'Email hoặc mật khẩu không đúng.', 401)
     const accessToken = makeToken(user.id as string, user.role as string)
     return ok({ accessToken, user: { id: user.id, name: user.name, email: user.email, role: user.role } })

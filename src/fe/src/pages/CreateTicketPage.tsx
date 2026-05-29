@@ -25,7 +25,7 @@ export function CreateTicketPage() {
   const { mutate, isPending } = useCreateTicket()
 
   return (
-    <div className="max-w-xl pb-24">
+    <div className="pb-24">
       <div className="mb-6">
         <h1 className="display-md text-ink">Báo hỏng / hết đồ dùng</h1>
         <p className="text-sm text-body mt-1">Điền thông tin để gửi yêu cầu xử lý.</p>

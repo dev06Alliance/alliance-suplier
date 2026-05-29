@@ -13,6 +13,7 @@ export interface Notification {
 interface NotifState {
   unreadCount: number
   notifications: Notification[]
+  setNotifications: (list: Notification[]) => void
   addNotification: (notif: Notification) => void
   markRead: (id: string) => void
   markAllRead: () => void
@@ -21,11 +22,19 @@ interface NotifState {
 export const useNotifStore = create<NotifState>((set) => ({
   unreadCount: 0,
   notifications: [],
-  addNotification: (notif) =>
-    set((s) => ({
-      notifications: [notif, ...s.notifications],
-      unreadCount: s.unreadCount + (notif.read ? 0 : 1),
+  setNotifications: (list) =>
+    set(() => ({
+      notifications: list,
+      unreadCount: list.filter((n) => !n.read).length,
     })),
+  addNotification: (notif) =>
+    set((s) => {
+      if (s.notifications.some((n) => n.id === notif.id)) return s
+      return {
+        notifications: [notif, ...s.notifications],
+        unreadCount: s.unreadCount + (notif.read ? 0 : 1),
+      }
+    }),
   markRead: (id) =>
     set((s) => ({
       notifications: s.notifications.map((n) => n.id === id ? { ...n, read: true } : n),

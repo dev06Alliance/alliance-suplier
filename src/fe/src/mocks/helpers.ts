@@ -1,7 +1,7 @@
 import { HttpResponse } from 'msw'
 import { db } from './db'
 
-export const BASE = '/api/v1'
+export const BASE = import.meta.env.VITE_API_BASE ?? '/api/v1'
 
 export function ok<T>(data: T, status = 200) {
   return HttpResponse.json({ success: true, data }, { status })

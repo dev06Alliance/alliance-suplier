@@ -1,7 +1,9 @@
 import axios from 'axios'
-import { getToken, setToken, removeToken } from '@/lib/auth'
+import { getToken, removeToken } from '@/lib/auth'
 
-const api = axios.create({ baseURL: '/api/v1' })
+export const API_BASE = import.meta.env.VITE_API_BASE ?? '/api/v1'
+
+const api = axios.create({ baseURL: API_BASE })
 
 api.interceptors.request.use((config) => {
   const token = getToken()
@@ -13,19 +15,10 @@ api.interceptors.request.use((config) => {
 
 api.interceptors.response.use(
   (res) => res.data,
-  async (err) => {
-    const original = err.config
-    if (err.response?.status === 401 && !original._retry) {
-      original._retry = true
-      try {
-        const { data } = await axios.post('/api/v1/auth/refresh')
-        setToken(data.data.accessToken)
-        original.headers.Authorization = `Bearer ${data.data.accessToken}`
-        return api(original)
-      } catch {
-        removeToken()
-        window.location.href = '/login'
-      }
+  (err) => {
+    if (err.response?.status === 401 && window.location.pathname !== '/login') {
+      removeToken()
+      window.location.href = '/login'
     }
     return Promise.reject(err)
   }
