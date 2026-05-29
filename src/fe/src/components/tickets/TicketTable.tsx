@@ -62,7 +62,7 @@ export function TicketTable({ tickets }: Props) {
       cell: ({ row }) => (
         <div className="flex items-center gap-2">
           <span className={cn('text-sm', row.original.isOverdue ? 'text-error font-medium' : 'text-body')}>
-            {format(new Date(row.original.deadline), 'dd/MM/yyyy')}
+            {format(new Date(row.original.deadline), 'dd/MM/yyyy HH:mm')}
           </span>
           {row.original.isOverdue && <OverdueBadge />}
         </div>

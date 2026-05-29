@@ -19,7 +19,7 @@ function SectionCard({ title, children }: { title: string; children: React.React
 export function CreateTicketPage() {
   const form = useForm<TicketCreateValues>({
     resolver: zodResolver(ticketCreateSchema),
-    defaultValues: { mode: 'list' },
+    defaultValues: { mode: 'list', hour: 17, minute: 0 },
   })
 
   const { mutate, isPending } = useCreateTicket()

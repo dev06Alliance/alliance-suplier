@@ -10,7 +10,7 @@ interface MetaEntry {
 export function TicketMetaGrid({ ticket }: { ticket: TicketDetail }) {
   const entries: MetaEntry[] = [
     { label: 'Sản phẩm',      value: ticket.product?.name ?? ticket.freeTextDesc ?? '—' },
-    { label: 'Danh mục',      value: ticket.product?.category?.name ?? '—' },
+    { label: 'Danh mục',      value: ticket.product?.categoryName ?? '—' },
     { label: 'Người yêu cầu', value: ticket.requester?.name ?? '—' },
     { label: 'Ngày tạo',      value: format(new Date(ticket.createdAt), 'dd/MM/yyyy HH:mm'), mono: true },
     { label: 'Xác nhận bởi',  value: ticket.confirmedBy?.name ?? '—' },

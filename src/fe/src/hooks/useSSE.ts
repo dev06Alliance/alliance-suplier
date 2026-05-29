@@ -16,7 +16,7 @@ function normalize(raw: Record<string, unknown>): Notification {
   const type = raw.type as string | undefined
   const label = type ? (TYPE_LABELS[type] ?? 'Thông báo mới') : 'Thông báo mới'
   const message = (raw.message as string | undefined) ?? (ticketId ? `${label} #${ticketId.slice(0, 8)}` : label)
-  const read = typeof raw.read === 'boolean' ? raw.read : !(raw.isRead as boolean | undefined)
+  const read = typeof raw.read === 'boolean' ? raw.read : !!(raw.isRead as boolean | undefined)
   return {
     id: raw.id as string,
     message,

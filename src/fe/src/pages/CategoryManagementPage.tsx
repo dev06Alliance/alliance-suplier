@@ -136,6 +136,7 @@ export function CategoryManagementPage() {
     mutationFn: ({ id, name }: { id: string; name: string }) => {
       const fd = new FormData()
       fd.append('name', name)
+      fd.append('categoryId', selectedCatId!)
       return api.put('/products/' + id, fd)
     },
     onSuccess: () => { void qc.invalidateQueries({ queryKey: ['products', selectedCatId] }); setProdDialog({ open: false, mode: 'add' }); toast.success('Đã cập nhật sản phẩm') },

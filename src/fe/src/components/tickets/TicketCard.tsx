@@ -55,7 +55,7 @@ export function TicketCard({ ticket }: { ticket: Ticket }) {
       )}>
         {overdue && <OverdueBadge />}
         <p className={cn('text-xs ml-auto', overdue ? 'text-error font-medium' : 'text-mute')}>
-          {format(new Date(ticket.deadline), 'dd/MM/yyyy')}
+          {format(new Date(ticket.deadline), 'dd/MM/yyyy HH:mm')}
           <span className="ml-1 text-[11px]">
             ({formatDistanceToNow(new Date(ticket.deadline), { addSuffix: true, locale: vi })})
           </span>

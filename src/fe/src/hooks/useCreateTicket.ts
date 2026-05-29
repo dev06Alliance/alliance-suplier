@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
-import { format } from 'date-fns'
+import { setHours, setMinutes } from 'date-fns'
 import { api } from '@/services/api'
 import type { TicketCreateValues } from '@/schemas/ticketCreate'
 
@@ -13,7 +13,8 @@ export function useCreateTicket() {
     mutationFn: async (values: TicketCreateValues) => {
       const fd = new FormData()
       fd.append('type', values.type)
-      fd.append('deadline', format(values.deadline, 'yyyy-MM-dd'))
+      const dt = setMinutes(setHours(values.deadline, values.hour ?? 17), values.minute ?? 0)
+      fd.append('deadline', dt.toISOString())
       if (values.productId)    fd.append('productId',    values.productId)
       if (values.freeTextDesc) fd.append('freeTextDesc', values.freeTextDesc)
       if (values.image)        fd.append('image',        values.image)

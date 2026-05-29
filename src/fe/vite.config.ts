@@ -25,6 +25,10 @@ export default defineConfig(({ mode }) => {
             })
           },
         },
+        '/uploads': {
+          target: apiUrl,
+          changeOrigin: true,
+        },
       },
     },
   }

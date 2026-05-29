@@ -8,14 +8,22 @@ export const ticketCreateSchema = z.object({
   freeTextDesc: z.string().optional(),
   image: z.instanceof(File).optional(),
   deadline: z.date()
-    .refine((d) => !!d, 'Chọn ngày hạn')
-    .refine((d) => d > new Date(), 'Ngày hạn phải ở tương lai'),
+    .refine((d) => !!d, 'Chọn ngày hạn'),
+  hour: z.coerce.number().int().min(0).max(23),
+  minute: z.coerce.number().int().min(0).max(59),
 }).superRefine((data, ctx) => {
   if (data.mode === 'list' && !data.productId) {
     ctx.addIssue({ code: 'custom', path: ['productId'], message: 'Vui lòng chọn sản phẩm' })
   }
   if (data.mode === 'freetext' && (!data.freeTextDesc || data.freeTextDesc.length < 10)) {
     ctx.addIssue({ code: 'custom', path: ['freeTextDesc'], message: 'Tối thiểu 10 ký tự' })
+  }
+  if (data.deadline) {
+    const dt = new Date(data.deadline)
+    dt.setHours(data.hour ?? 0, data.minute ?? 0, 0, 0)
+    if (dt <= new Date()) {
+      ctx.addIssue({ code: 'custom', path: ['deadline'], message: 'Ngày/giờ hạn phải ở tương lai' })
+    }
   }
 })
 

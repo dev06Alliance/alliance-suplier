@@ -16,11 +16,11 @@ export function DeadlineHistory({ ticket }: { ticket: TicketDetail }) {
             <div>
               <p className="text-sm">
                 <span className="line-through text-mute">
-                  {format(new Date(h.oldDeadline), 'dd/MM/yyyy')}
+                  {format(new Date(h.oldDeadline), 'dd/MM/yyyy HH:mm')}
                 </span>
                 <span className="mx-2 text-mute">→</span>
                 <span className="font-medium text-ink">
-                  {format(new Date(h.newDeadline), 'dd/MM/yyyy')}
+                  {format(new Date(h.newDeadline), 'dd/MM/yyyy HH:mm')}
                 </span>
               </p>
               <p className="text-xs text-body mt-0.5">

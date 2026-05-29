@@ -18,7 +18,7 @@ export function TicketActions({ ticket }: Props) {
 
   if (!isManager) return null
 
-  const canMarkDone = ticket.status === 'Confirmed' && ticket.confirmedById === user?.id
+  const canMarkDone = ticket.status === 'Confirmed' && ticket.confirmedBy?.id === user?.id
 
   return (
     <div className="flex gap-2 flex-wrap">

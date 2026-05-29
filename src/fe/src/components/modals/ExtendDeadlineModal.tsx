@@ -2,12 +2,13 @@ import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { format, addDays } from 'date-fns'
+import { format, setHours, setMinutes, startOfDay } from 'date-fns'
 import { CalendarIcon } from 'lucide-react'
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter,
 } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Label } from '@/components/ui/label'
 import { Calendar } from '@/components/ui/calendar'
@@ -17,7 +18,9 @@ import { cn } from '@/lib/utils'
 const schema = z.object({
   deadline: z.date()
     .refine((d) => !!d, 'Vui lòng chọn ngày')
-    .refine((d) => d > new Date(), 'Ngày phải ở tương lai'),
+    .refine((d) => d > new Date(), 'Ngày/giờ phải ở tương lai'),
+  hour: z.coerce.number().int().min(0).max(23),
+  minute: z.coerce.number().int().min(0).max(59),
   reason: z.string().min(10, 'Tối thiểu 10 ký tự'),
 })
 
@@ -35,17 +38,19 @@ export function ExtendDeadlineModal({ open, onOpenChange, onSubmit, isPending }:
 
   const form = useForm<FormValues>({
     resolver: zodResolver(schema),
+    defaultValues: { hour: 17, minute: 0 },
   })
 
   const deadline = form.watch('deadline')
 
   const handleSubmit = form.handleSubmit((values) => {
+    const dt = setMinutes(setHours(values.deadline, values.hour), values.minute)
     onSubmit({
-      newDeadline: format(values.deadline, 'yyyy-MM-dd'),
+      newDeadline: dt.toISOString(),
       reason: values.reason,
     })
     onOpenChange(false)
-    form.reset()
+    form.reset({ hour: 17, minute: 0 })
   })
 
   return (
@@ -78,13 +83,39 @@ export function ExtendDeadlineModal({ open, onOpenChange, onSubmit, isPending }:
                       setCalOpen(false)
                     }
                   }}
-                  disabled={(d) => d <= addDays(new Date(), 0)}
+                  disabled={(d) => d < startOfDay(new Date())}
                 />
               </PopoverContent>
             </Popover>
             {form.formState.errors.deadline && (
               <p className="text-xs text-error">{form.formState.errors.deadline.message}</p>
             )}
+          </div>
+
+          <div className="space-y-1.5">
+            <Label>Giờ</Label>
+            <div className="flex items-center gap-2">
+              <Input
+                type="number"
+                min={0}
+                max={23}
+                placeholder="HH"
+                className="w-20 text-center"
+                {...form.register('hour')}
+              />
+              <span className="text-mute font-semibold">:</span>
+              <Input
+                type="number"
+                min={0}
+                max={59}
+                placeholder="mm"
+                className="w-20 text-center"
+                {...form.register('minute')}
+              />
+              <span className="text-sm text-mute">
+                {deadline && `— ${format(setMinutes(setHours(deadline, Number(form.watch('hour') || 0)), Number(form.watch('minute') || 0)), 'dd/MM/yyyy HH:mm')}`}
+              </span>
+            </div>
           </div>
 
           <div className="space-y-1.5">

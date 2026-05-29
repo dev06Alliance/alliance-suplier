@@ -1,3 +1,3 @@
 namespace AllianceSupplier.Service.DTOs.Shared;
 
-public record ProductRef(Guid Id, string Name);
+public record ProductRef(Guid Id, string Name, Guid CategoryId, string? CategoryName);

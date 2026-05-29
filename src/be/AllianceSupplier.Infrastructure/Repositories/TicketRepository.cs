@@ -56,6 +56,7 @@ public class TicketRepository(AppDbContext db) : ITicketRepository
         var items = await q
             .Include(t => t.Requester)
             .Include(t => t.Product)
+                .ThenInclude(p => p!.Category)
             .OrderByDescending(t => t.CreatedAt)
             .Skip(skip)
             .Take(filter.PageSize)
@@ -68,6 +69,7 @@ public class TicketRepository(AppDbContext db) : ITicketRepository
         db.Tickets
             .Include(t => t.Requester)
             .Include(t => t.Product)
+                .ThenInclude(p => p!.Category)
             .Include(t => t.ConfirmedBy)
             .Include(t => t.DeadlineHistories)
                 .ThenInclude(dh => dh.ChangedBy)

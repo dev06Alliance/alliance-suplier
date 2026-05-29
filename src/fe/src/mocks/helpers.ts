@@ -46,7 +46,7 @@ export function formatTicket(t: Record<string, unknown>) {
     ...t,
     isOverdue: isOverdue(t),
     product: prod
-      ? { id: prod.id, name: prod.name, imageUrl: prod.imageUrl, category: category ?? null }
+      ? { id: prod.id, name: prod.name, categoryId: prod.categoryId, categoryName: (category as Record<string, unknown> | null)?.name ?? null }
       : null,
     requester: requester ? { id: requester.id, name: requester.name } : null,
   }
