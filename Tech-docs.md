@@ -124,6 +124,184 @@ GET  /uploads/:filename       static serve
 
 ---
 
+## Request / Response Contract
+
+### Envelope
+
+**Success**
+```json
+{
+  "success": true,
+  "data": { ... }
+}
+```
+
+**List**
+```json
+{
+  "success": true,
+  "data": [ ... ]
+}
+```
+
+**Error**
+```json
+{
+  "success": false,
+  "error": {
+    "code": "TICKET_NOT_FOUND",
+    "message": "Ticket không tồn tại."
+  }
+}
+```
+
+HTTP status codes: `200 OK`, `201 Created`, `400 Bad Request`, `401 Unauthorized`, `403 Forbidden`, `404 Not Found`, `422 Unprocessable Entity`.
+
+---
+
+### Key Payloads
+
+**POST /auth/login — request**
+```json
+{ "email": "user@company.com", "password": "..." }
+```
+**response**
+```json
+{
+  "success": true,
+  "data": {
+    "accessToken": "...",
+    "user": { "id": "...", "name": "...", "email": "...", "role": "Manager" }
+  }
+}
+```
+
+---
+
+**POST /tickets — request** `multipart/form-data`
+```
+type         = "Broken" | "Empty"
+deadline     = "2026-06-15"
+productId    = "guid"           (chọn từ danh mục)
+freeTextDesc = "Máy in tầng 3"  (nếu ko có productId)
+image        = <file>           (nếu ko có productId)
+```
+**response `201`**
+```json
+{
+  "success": true,
+  "data": { "id": "...", "status": "Pending", "deadline": "2026-06-15" }
+}
+```
+
+---
+
+**GET /tickets — response**
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "id": "...",
+      "type": "Broken",
+      "status": "Pending",
+      "deadline": "2026-06-15",
+      "isOverdue": true,
+      "product": { "id": "...", "name": "Máy in Canon" },
+      "freeTextDesc": null,
+      "imageUrl": null,
+      "requester": { "id": "...", "name": "Nguyễn A" },
+      "createdAt": "2026-05-29T10:00:00Z"
+    }
+  ]
+}
+```
+
+---
+
+**GET /tickets/:id — response** (Manager/Admin thấy thêm `deadlineHistory`)
+```json
+{
+  "success": true,
+  "data": {
+    "id": "...",
+    "type": "Broken",
+    "status": "Confirmed",
+    "deadline": "2026-06-15",
+    "isOverdue": false,
+    "product": { "id": "...", "name": "Máy in Canon", "imageUrl": "/uploads/xxx.jpg" },
+    "freeTextDesc": null,
+    "imageUrl": null,
+    "requester": { "id": "...", "name": "Nguyễn A" },
+    "confirmedBy": { "id": "...", "name": "Trần B" },
+    "createdAt": "2026-05-29T10:00:00Z",
+    "deadlineHistory": [
+      {
+        "oldDeadline": "2026-06-10",
+        "newDeadline": "2026-06-15",
+        "reason": "Chờ linh kiện",
+        "changedBy": { "id": "...", "name": "Trần B" },
+        "changedAt": "2026-06-09T08:00:00Z"
+      }
+    ]
+  }
+}
+```
+
+---
+
+**PATCH /tickets/:id/deadline — request**
+```json
+{ "newDeadline": "2026-06-20", "reason": "Chờ linh kiện" }
+```
+
+---
+
+**GET /notifications — response**
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "id": "...",
+      "type": "TicketConfirmed",
+      "isRead": false,
+      "createdAt": "2026-05-29T10:05:00Z",
+      "payload": { "ticketId": "...", "ticketType": "Broken", "productName": "Máy in Canon", "productImageUrl": "/uploads/xxx.jpg", "categoryName": "Thiết bị văn phòng" }
+    }
+  ]
+}
+```
+
+---
+
+**SSE — event format**
+```
+data: {"type":"TicketCreated","payload":{"ticketId":"...","requesterName":"Nguyễn A"}}
+```
+
+---
+
+**GET /reports — response**
+```json
+{
+  "success": true,
+  "data": { "total": 12, "confirmed": 8, "done": 5 }
+}
+```
+
+---
+
+**POST /uploads — response**
+```json
+{
+  "success": true,
+  "data": { "url": "/uploads/abc123.jpg" }
+}
+```
+
+---
+
 ## Authorization Matrix
 
 | Action | USER | MANAGER | ADMIN |
