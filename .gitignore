@@ -1,0 +1,10 @@
+# Claude
+.claude/
+docs/
+plans/
+CLAUDE.md
+
+# Environment
+.env
+.env.*
+!.env.example
