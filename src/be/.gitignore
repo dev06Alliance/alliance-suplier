@@ -1,5 +1,10 @@
-node_modules
-# Keep environment variables out of version control
-.env
+# .NET
+bin/
+obj/
+*.user
+*.suo
+.vs/
 
-/generated/prisma
+# Environment
+.env
+appsettings.*.local.json

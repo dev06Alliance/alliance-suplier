@@ -5,19 +5,21 @@
 ```
 src/
 ├── fe/          # Frontend - React + TypeScript (Vite)
-└── be/          # Backend - Node.js + Express + TypeScript + Prisma + PostgreSQL
-    ├── src/
-    │   ├── app.ts
-    │   ├── server.ts
-    │   └── lib/
-    │       └── prisma.ts
-    └── prisma/
-        └── schema.prisma
+└── be/          # Backend - .NET 10 Web API + Entity Framework Core + PostgreSQL
+    ├── Controllers/
+    │   └── HealthController.cs
+    ├── Data/
+    │   └── AppDbContext.cs
+    ├── Properties/
+    │   └── launchSettings.json
+    ├── AllianceSupplier.Api.csproj
+    ├── Program.cs
+    └── appsettings.json
 ```
 
 ## Yêu cầu
 
-- Node.js 18+
+- .NET 10 SDK
 - PostgreSQL 14+
 
 ## Khởi chạy
@@ -34,9 +36,10 @@ npm run dev
 
 ```bash
 cd src/be
-npm install
-npm run dev
+dotnet run
 ```
+
+Server chạy tại `http://localhost:3000`
 
 ## Database
 
@@ -46,16 +49,24 @@ Tạo database PostgreSQL:
 CREATE DATABASE alliance_supplier;
 ```
 
-Cấu hình connection string trong `src/be/.env`:
+Cấu hình connection string trong `src/be/appsettings.json`:
 
-```
-DATABASE_URL="postgresql://postgres:postgres@localhost:5432/alliance_supplier?schema=public"
+```json
+"ConnectionStrings": {
+  "DefaultConnection": "Host=localhost;Port=5432;Database=alliance_supplier;Username=postgres;Password=postgres"
+}
 ```
 
-Chạy migration:
+## Migrations (Entity Framework Core)
 
 ```bash
 cd src/be
-npm run db:migrate
+dotnet ef migrations add InitialCreate
+dotnet ef database update
 ```
-"# alliance-suplier" 
+
+## Endpoints
+
+| Method | Path      | Description  |
+|--------|-----------|--------------|
+| GET    | /health   | Health check |

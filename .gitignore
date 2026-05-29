@@ -8,3 +8,4 @@ CLAUDE.md
 .env
 .env.*
 !.env.example
+.vscode/
