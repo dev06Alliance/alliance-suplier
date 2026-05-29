@@ -1,3 +1,14 @@
+# Claude
+.claude/
+docs/
+plans/
+CLAUDE.md
+
+# Local env files (mock config, dev secrets)
+.env.development
+.env.local
+.env.*.local
+
 # Logs
 logs
 *.log
